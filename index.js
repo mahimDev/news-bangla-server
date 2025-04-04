@@ -23,8 +23,16 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
+    const dataBase = await client.db("newsBangla");
+    const newsCollection = dataBase.collection("news");
     app.get("/", (req, res) => {
       res.send("Welcome to news bangla");
+    });
+    // news post api
+    app.post("/addNews", async (req, res) => {
+      const newsData = req.body;
+      const result = await newsCollection.insertOne(newsData);
+      res.send(result);
     });
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
