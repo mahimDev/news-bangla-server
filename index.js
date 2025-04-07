@@ -45,7 +45,10 @@ async function run() {
             },
           },
           {
-            $skip: 1,
+            $skip: 6,
+          },
+          {
+            $limit: 6,
           },
           {
             $project: {
@@ -64,10 +67,13 @@ async function run() {
         .toArray();
       res.send(news);
     });
-    // latest 1 news get api
+    // latest bangladesh 1 news get api
     app.get("/latestNews", async (req, res) => {
       const latestNews = await newsCollection
         .aggregate([
+          {
+            $match: { category: "bangladesh" },
+          },
           {
             $sort: { _id: -1 },
           },
@@ -88,11 +94,259 @@ async function run() {
         .toArray();
       res.send(latestNews);
     });
+    // latest 2 news get api
+    app.get("/latest2nd3rdNews", async (req, res) => {
+      const latestNews = await newsCollection
+        .aggregate([
+          {
+            $match: { category: "bangladesh" },
+          },
+          {
+            $sort: { _id: -1 },
+          },
+          {
+            $skip: 1,
+          },
+          {
+            $limit: 2,
+          },
+          {
+            $addFields: {
+              createdAt: {
+                $dateToString: {
+                  format: "%d-%m-%Y %H:%M",
+                  date: { $toDate: "$_id" },
+                },
+              },
+            },
+          },
+        ])
+        .toArray();
+      res.send(latestNews);
+    });
+    // Sports //
+    // latest Sports 1 news get api
+    app.get("/latestSportsNews", async (req, res) => {
+      const latestNews = await newsCollection
+        .aggregate([
+          {
+            $match: { category: "sports" },
+          },
+          {
+            $sort: { _id: -1 },
+          },
+          {
+            $limit: 1,
+          },
+          {
+            $addFields: {
+              createdAt: {
+                $dateToString: {
+                  format: "%d-%m-%Y %H:%M",
+                  date: { $toDate: "$_id" },
+                },
+              },
+            },
+          },
+        ])
+        .toArray();
+      res.send(latestNews);
+    });
+    // latest Sports 2 news get api
+    app.get("/latest2nd3rdSportsNews", async (req, res) => {
+      const latestNews = await newsCollection
+        .aggregate([
+          {
+            $match: { category: "sports" },
+          },
+          {
+            $sort: { _id: -1 },
+          },
+          {
+            $skip: 1,
+          },
+          {
+            $limit: 3,
+          },
+          {
+            $addFields: {
+              createdAt: {
+                $dateToString: {
+                  format: "%d-%m-%Y %H:%M",
+                  date: { $toDate: "$_id" },
+                },
+              },
+            },
+          },
+        ])
+        .toArray();
+      res.send(latestNews);
+    });
+
+    // International  //
+    // latest International 1 news get api
+    app.get("/latestInternationalNews", async (req, res) => {
+      const latestNews = await newsCollection
+        .aggregate([
+          {
+            $match: { category: "international" },
+          },
+          {
+            $sort: { _id: -1 },
+          },
+          {
+            $limit: 1,
+          },
+          {
+            $addFields: {
+              createdAt: {
+                $dateToString: {
+                  format: "%d-%m-%Y %H:%M",
+                  date: { $toDate: "$_id" },
+                },
+              },
+            },
+          },
+        ])
+        .toArray();
+      res.send(latestNews);
+    });
+    // latest Sports 2 news get api
+    app.get("/latest2nd3rdInternationalNews", async (req, res) => {
+      const latestNews = await newsCollection
+        .aggregate([
+          {
+            $match: { category: "international" },
+          },
+          {
+            $sort: { _id: -1 },
+          },
+          {
+            $skip: 1,
+          },
+          {
+            $limit: 3,
+          },
+          {
+            $addFields: {
+              createdAt: {
+                $dateToString: {
+                  format: "%d-%m-%Y %H:%M",
+                  date: { $toDate: "$_id" },
+                },
+              },
+            },
+          },
+        ])
+        .toArray();
+      res.send(latestNews);
+    });
+    // entertainment  //
+    // latest International 1 news get api
+    app.get("/latestentertainmentNews", async (req, res) => {
+      const latestNews = await newsCollection
+        .aggregate([
+          {
+            $match: { category: "entertainment" },
+          },
+          {
+            $sort: { _id: -1 },
+          },
+          {
+            $limit: 1,
+          },
+          {
+            $addFields: {
+              createdAt: {
+                $dateToString: {
+                  format: "%d-%m-%Y %H:%M",
+                  date: { $toDate: "$_id" },
+                },
+              },
+            },
+          },
+        ])
+        .toArray();
+      res.send(latestNews);
+    });
+    // latest Sports 2 news get api
+    app.get("/latest2nd3rdentertainmentNews", async (req, res) => {
+      const latestNews = await newsCollection
+        .aggregate([
+          {
+            $match: { category: "entertainment" },
+          },
+          {
+            $sort: { _id: -1 },
+          },
+          {
+            $skip: 1,
+          },
+          {
+            $limit: 3,
+          },
+          {
+            $addFields: {
+              createdAt: {
+                $dateToString: {
+                  format: "%d-%m-%Y %H:%M",
+                  date: { $toDate: "$_id" },
+                },
+              },
+            },
+          },
+        ])
+        .toArray();
+      res.send(latestNews);
+    });
+
+    //  all categories news get api
+    app.get("/news/:category", async (req, res) => {
+      const category = req.params.category;
+
+      const news = await newsCollection
+        .aggregate([
+          {
+            $match: { category: category },
+          },
+          {
+            $addFields: {
+              createdAt: {
+                $toDate: "$_id",
+              },
+            },
+          },
+          {
+            $sort: {
+              createdAt: -1,
+            },
+          },
+          // {
+          //   $skip: 3,
+          // },
+          {
+            $project: {
+              title: 1,
+              content: 1,
+              imageUrl: 1,
+              createdAt: {
+                $dateToString: {
+                  format: "%Y-%m-%d %H:%M",
+                  date: { $toDate: "$_id" },
+                },
+              },
+            },
+          },
+        ])
+        .toArray();
+      res.send(news);
+    });
     // read a singel news
-    app.get("/news/:id", async (req, res) => {
+    app.get("/newsDetails/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await newsCollection.findOne(query);
+      console.log(query);
       res.send(result);
     });
     // news post api
