@@ -346,8 +346,44 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await newsCollection.findOne(query);
-      console.log(query);
       res.send(result);
+    });
+
+    // when share the content will be show thumbnail and image
+    app.get("/share/:id", async (req, res) => {
+      const { id } = req.params;
+      const news = await newsCollection.findOne({ _id: new ObjectId(id) });
+
+      if (!news) return res.status(404).send("News not found");
+
+      const html = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta property="og:title" content="${news.title}" />
+          <meta property="og:description" content="${news.content.substring(
+            0,
+            100
+          )}..." />
+          <meta property="og:image" content="${news.imageUrl}" />
+          <meta property="og:url" content="https://nekrenews/news/${
+            news._id
+          }" />
+          <meta property="og:type" content="article" />
+          <title>${news.title}</title>
+        </head>
+        <body>
+          <h1>Redirecting...</h1>
+          <script>
+            window.location.href = "/news/${news._id}";
+          </script>
+        </body>
+        </html>
+      `;
+
+      res.send(html);
     });
     // news post api
     app.post("/addNews", async (req, res) => {
