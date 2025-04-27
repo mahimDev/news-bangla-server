@@ -25,10 +25,26 @@ async function run() {
     // await client.connect();
     const dataBase = await client.db("newsBangla");
     const newsCollection = dataBase.collection("news");
+    const usersCollection = dataBase.collection("users");
     app.get("/", (req, res) => {
       res.send("Welcome to news bangla");
     });
-    // latest all news get api
+    // isAdmin get api
+    app.get("/isAdmin/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const result = await usersCollection.findOne(query);
+      if (result.role === "admin") {
+        res.send({ isAdmin: true });
+      } else {
+        res.send({ isAdmin: false });
+      }
+    });
+    app.get("/all-news", async (req, res) => {
+      const result = await newsCollection.find().sort({ _id: -1 }).toArray();
+      res.send(result);
+    });
+    // latest 6 news get api
     app.get("/news", async (req, res) => {
       const news = await newsCollection
         .aggregate([
@@ -389,6 +405,43 @@ async function run() {
     app.post("/addNews", async (req, res) => {
       const newsData = req.body;
       const result = await newsCollection.insertOne(newsData);
+      res.send(result);
+    });
+    // user post api
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const email = user.email;
+      const query = { email: email };
+      const findEmail = await usersCollection.findOne(query);
+      if (findEmail) {
+        res.send({ massage: "user already save in database" });
+      } else {
+        const result = await usersCollection.insertOne(user);
+        res.send(result);
+      }
+    });
+    // news updated put api
+    app.put("/updateNews/:id", async (req, res) => {
+      const id = req.params.id;
+      const news = req.body;
+      const query = { _id: new ObjectId(id) };
+      const updatedNews = {
+        $set: {
+          title: news?.title,
+          content: news?.content,
+          category: news?.category,
+          author: news?.author,
+          imageUrl: news?.imageUrl,
+        },
+      };
+      const result = await newsCollection.updateOne(query, updatedNews);
+      res.send(result);
+    });
+    // news delete api
+    app.delete("/news/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await newsCollection.deleteOne(query);
       res.send(result);
     });
     // Send a ping to confirm a successful connection
