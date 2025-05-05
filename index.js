@@ -366,6 +366,7 @@ async function run() {
     });
 
     // when share the content will be show thumbnail and image
+
     // app.get("/share/:id", async (req, res) => {
     //   const { id } = req.params;
     //   const news = await newsCollection.findOne({ _id: new ObjectId(id) });
@@ -376,29 +377,45 @@ async function run() {
     //     <!DOCTYPE html>
     //     <html lang="en">
     //     <head>
-    //       <meta charset="UTF-8">
-    //       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    //       <meta property="og:title" content="${news.title}" />
-    //       <meta property="og:description" content="${news.content.substring(
+    //       <meta charset="UTF-8" />
+    //       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    //       <!-- Open Graph meta tags -->
+    //       <meta property="og:title" content="${news?.title}" />
+    //       <meta property="og:description" content="${news?.content?.substring(
     //         0,
-    //         100
+    //         150
     //       )}..." />
-    //       <meta property="og:image" content="${news.imageUrl}" />
-    //       <meta property="og:url" content="https://nekrenews/news/${
-    //         news._id
+    //       <meta property="og:image" content="${news?.imageUrl}" />
+    //       <meta property="og:url" content="https://nekrenews.net/news/${
+    //         news?._id
     //       }" />
     //       <meta property="og:type" content="article" />
-    //       <title>${news.title}</title>
+
+    //       <!-- Twitter meta tags -->
+    //       <meta name="twitter:card" content="summary_large_image" />
+    //       <meta name="twitter:title" content="${news?.title}" />
+    //       <meta name="twitter:description" content="${news?.content?.substring(
+    //         0,
+    //         150
+    //       )}..." />
+    //       <meta name="twitter:image" content="${news?.imageUrl}" />
+
+    //       <title>${news?.title}</title>
+
+    //       <!-- Redirect after 1 second -->
+
+    //       <meta http-equiv="refresh" content="1; URL=https://nekrenews.net/news/${
+    //         news?._id
+    //       }" />
     //     </head>
     //     <body>
-    //       <h1>Redirecting...</h1>
-    //       <script>
-    //         window.location.href = "/news/${news._id}";
-    //       </script>
+    //       <p>Redirecting to news details...</p>
     //     </body>
     //     </html>
     //   `;
 
+    //   res.setHeader("Content-Type", "text/html");
     //   res.send(html);
     // });
     app.get("/share/:id", async (req, res) => {
@@ -413,8 +430,6 @@ async function run() {
         <head>
           <meta charset="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-          <!-- Open Graph meta tags -->
           <meta property="og:title" content="${news?.title}" />
           <meta property="og:description" content="${news?.content?.substring(
             0,
@@ -425,8 +440,6 @@ async function run() {
             news?._id
           }" />
           <meta property="og:type" content="article" />
-    
-          <!-- Twitter meta tags -->
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:title" content="${news?.title}" />
           <meta name="twitter:description" content="${news?.content?.substring(
@@ -435,12 +448,11 @@ async function run() {
           )}..." />
           <meta name="twitter:image" content="${news?.imageUrl}" />
     
-          <title>${news?.title}</title>
-    
-          <!-- Redirect after 1 second -->
+          <!-- ✅ FULL URL redirect -->
           <meta http-equiv="refresh" content="1; URL=https://nekrenews.net/news/${
             news?._id
           }" />
+          <title>${news?.title}</title>
         </head>
         <body>
           <p>Redirecting to news details...</p>
