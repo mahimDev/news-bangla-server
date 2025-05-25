@@ -366,7 +366,6 @@ async function run() {
     });
 
     // when share the content will be show thumbnail and image
-
     // app.get("/share/:id", async (req, res) => {
     //   const { id } = req.params;
     //   const news = await newsCollection.findOne({ _id: new ObjectId(id) });
@@ -379,20 +378,16 @@ async function run() {
     //     <head>
     //       <meta charset="UTF-8" />
     //       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    //       <!-- Open Graph meta tags -->
     //       <meta property="og:title" content="${news?.title}" />
     //       <meta property="og:description" content="${news?.content?.substring(
     //         0,
     //         150
     //       )}..." />
     //       <meta property="og:image" content="${news?.imageUrl}" />
-    //       <meta property="og:url" content="https://nekrenews.net/news/${
+    //       <meta property="og:url" content="https://news-bangla.netlify.app/news/${
     //         news?._id
     //       }" />
-    //       <meta property="og:type" content="article" />
-
-    //       <!-- Twitter meta tags -->
+    //       <meta property="og:type" content="arti cle" />
     //       <meta name="twitter:card" content="summary_large_image" />
     //       <meta name="twitter:title" content="${news?.title}" />
     //       <meta name="twitter:description" content="${news?.content?.substring(
@@ -401,13 +396,11 @@ async function run() {
     //       )}..." />
     //       <meta name="twitter:image" content="${news?.imageUrl}" />
 
-    //       <title>${news?.title}</title>
-
-    //       <!-- Redirect after 1 second -->
-
-    //       <meta http-equiv="refresh" content="1; URL=https://nekrenews.net/news/${
+    //       <!-- ✅ FULL URL redirect -->
+    //       <meta http-equiv="refresh" content="1; URL=https://news-bangla.netlify.app/news/${
     //         news?._id
     //       }" />
+    //       <title>${news?.title}</title>
     //     </head>
     //     <body>
     //       <p>Redirecting to news details...</p>
@@ -418,6 +411,7 @@ async function run() {
     //   res.setHeader("Content-Type", "text/html");
     //   res.send(html);
     // });
+    //---------------------------
     app.get("/share/:id", async (req, res) => {
       const { id } = req.params;
       const news = await newsCollection.findOne({ _id: new ObjectId(id) });
@@ -439,7 +433,7 @@ async function run() {
           <meta property="og:url" content="https://nekrenews.net/news/${
             news?._id
           }" />
-          <meta property="og:type" content="article" />
+          <meta property="og:type" content="arti cle" />
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:title" content="${news?.title}" />
           <meta name="twitter:description" content="${news?.content?.substring(
