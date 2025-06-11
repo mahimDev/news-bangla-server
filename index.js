@@ -412,6 +412,8 @@ async function run() {
     //   res.send(html);
     // });
     //---------------------------
+    // share for social media
+    //  ---------------
     app.get("/share/:id", async (req, res) => {
       const { id } = req.params;
       const news = await newsCollection.findOne({ _id: new ObjectId(id) });
@@ -419,45 +421,107 @@ async function run() {
       if (!news) return res.status(404).send("News not found");
 
       const html = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <meta property="og:title" content="${news?.title}" />
-          <meta property="og:description" content="${news?.content?.substring(
-            0,
-            150
-          )}..." />
-          <meta property="og:image" content="${news?.imageUrl}" />
-          <meta property="og:url" content="https://nekrenews.net/news/${
-            news?._id
-          }" />
-          <meta property="og:type" content="arti cle" />
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content="${news?.title}" />
-          <meta name="twitter:description" content="${news?.content?.substring(
-            0,
-            150
-          )}..." />
-          <meta name="twitter:image" content="${news?.imageUrl}" />
-    
-          <!-- ✅ FULL URL redirect -->
-          <meta http-equiv="refresh" content="1; URL=https://nekrenews.net/news/${
-            news?._id
-          }" />
-          <title>${news?.title}</title>
-        </head>
-        <body>
-          <p>Redirecting to news details...</p>
-        </body>
-        </html>
-      `;
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>${news.title}</title>
+
+      <!-- ✅ Open Graph Meta Tags -->
+      <meta property="og:title" content="${news.title}" />
+      <meta property="og:description" content="${(news.content || "").substring(
+        0,
+        150
+      )}..." />
+      <meta property="og:image" content="${news.imageUrl}" />
+      <meta property="og:url" content="${process.env.FRONTEND_URL}/news/${
+        news._id
+      }" />
+      <meta property="og:type" content="article" />
+
+      <!-- ✅ Twitter Card Meta Tags -->
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content="${news.title}" />
+      <meta name="twitter:description" content="${(
+        news.content || ""
+      ).substring(0, 150)}..." />
+      <meta name="twitter:image" content="${news.imageUrl}" />
+
+      <!-- ✅ Delay JS-based redirect to allow FB/Twitter scraping -->
+      <script>
+        setTimeout(() => {
+          window.location.href = "${process.env.FRONTEND_URL}/news/${news._id}";
+        }, 3000);
+      </script>
+    </head>
+    <body>
+      <h1>Sharing: ${news.title}</h1>
+      <p>Redirecting to full news in a moment...</p>
+    </body>
+    </html>
+  `;
 
       res.setHeader("Content-Type", "text/html");
       res.send(html);
     });
 
+    app.get("/whatsappShare/:id", async (req, res) => {
+      const { id } = req.params;
+
+      try {
+        const news = await newsCollection.findOne({ _id: new ObjectId(id) });
+
+        if (!news) {
+          return res.status(404).send("News not found");
+        }
+
+        const title = news.title || "News Bangla";
+        const description = news.content
+          ? news.content.substring(0, 150) + "..."
+          : "Click to read the full news article.";
+        const imageUrl =
+          news.imageUrl || "https://your-default-image-url.com/default.jpg";
+        const newsUrl = `${process.env.FRONTEND_URL}/news/${news._id}`;
+
+        const html = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>${title}</title>
+
+        <!-- Open Graph Meta Tags -->
+        <meta property="og:title" content="${title}" />
+        <meta property="og:description" content="${description}" />
+        <meta property="og:image" content="${imageUrl}" />
+        <meta property="og:url" content="${newsUrl}" />
+        <meta property="og:type" content="article" />
+
+        <!-- Twitter Card Meta Tags -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="${title}" />
+        <meta name="twitter:description" content="${description}" />
+        <meta name="twitter:image" content="${imageUrl}" />
+
+        <!-- Optional: Refresh to actual page after 3s for user -->
+        <meta http-equiv="refresh" content="3;url=${newsUrl}">
+      </head>
+      <body>
+        <h1>Redirecting to the news...</h1>
+        <p>If you are not redirected, <a href="${newsUrl}">click here</a>.</p>
+      </body>
+      </html>
+    `;
+
+        res.setHeader("Content-Type", "text/html");
+        res.send(html);
+      } catch (err) {
+        console.error("Error fetching news:", err);
+        res.status(500).send("Internal Server Error");
+      }
+    });
     // news post api
     app.post("/addNews", async (req, res) => {
       const newsData = req.body;
