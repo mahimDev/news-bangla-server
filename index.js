@@ -419,7 +419,7 @@ async function run() {
       const news = await newsCollection.findOne({ _id: new ObjectId(id) });
 
       if (!news) return res.status(404).send("News not found");
-
+      console.log(process.env.FRONTEND_URL);
       const html = `
     <!DOCTYPE html>
     <html lang="en">
@@ -452,7 +452,7 @@ async function run() {
       <script>
         setTimeout(() => {
           window.location.href = "${process.env.FRONTEND_URL}/news/${news._id}";
-        }, 3000);
+        }, 2000);
       </script>
     </head>
     <body>
