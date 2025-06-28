@@ -419,7 +419,6 @@ async function run() {
       const news = await newsCollection.findOne({ _id: new ObjectId(id) });
 
       if (!news) return res.status(404).send("News not found");
-      console.log(process.env.FRONTEND_URL);
       const html = `
     <!DOCTYPE html>
     <html lang="en">
@@ -427,7 +426,6 @@ async function run() {
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>${news.title}</title>
-
       <!-- ✅ Open Graph Meta Tags -->
       <meta property="og:title" content="${news.title}" />
       <meta property="og:description" content="${(news.content || "").substring(
@@ -461,7 +459,6 @@ async function run() {
     </body>
     </html>
   `;
-
       res.setHeader("Content-Type", "text/html");
       res.send(html);
     });
